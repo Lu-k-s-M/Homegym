@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_ejercicios"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Ejercicios" />
+    <item
+        android:id="@+id/nav_rutinas"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Rutinas" />
+    <item
+        android:id="@+id/nav_recientes"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Recientes" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Perfil" />
+    <item
+        android:id="@+id/nav_ajustes"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Ajustes" />
+    <item
+        android:id="@+id/nav_faq"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="FAQ" />
+    <item
+        android:id="@+id/nav_theme"
+        android:icon="@drawable/ic_lightbulb"
+        android:title="Modo Luz/Noche" />
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@android:drawable/ic_lock_power_off"
+        android:title="Cerrar sesión" />
+</menu>

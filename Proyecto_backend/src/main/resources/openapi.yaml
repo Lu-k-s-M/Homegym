@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Homegym API
+  description: API para la gestión de ejercicios, perfiles de usuario, rutinas y entrenamientos.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+    description: Servidor Local
+paths:
+  /api/login:
+    post:
+      summary: Iniciar sesión
+      tags: [Autenticación]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /api/register:
+    post:
+      summary: Registrar un nuevo usuario (Solo Admin)
+      tags: [Autenticación]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                rol:
+                  type: string
+                  enum: [user, creator, admin]
+      responses:
+        '201':
+          description: Creado
+  /api/ejercicios:
+    get:
+      summary: Obtener lista de ejercicios
+      tags: [Ejercicios]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de ejercicios
+    post:
+      summary: Crear un nuevo ejercicio
+      tags: [Ejercicios]
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Ejercicio creado
+  /api/perfil:
+    get:
+      summary: Obtener perfil del usuario
+      tags: [Perfil]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Datos del perfil
+    put:
+      summary: Actualizar perfil del usuario
+      tags: [Perfil]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil actualizado
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

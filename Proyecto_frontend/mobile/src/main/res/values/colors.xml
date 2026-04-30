@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Paleta Homegym -->
+    <color name="hg_primary">#E67447</color>
+    <color name="hg_secondary_1">#489695</color>
+    <color name="hg_secondary_2">#F09B67</color>
+    <color name="hg_secondary_3">#AB6A44</color>
+    <color name="hg_background_light">#D6EBF4</color>
+    <color name="hg_background_dark">#282624</color>
+
+    <color name="focus_color">#F09B67</color> <!-- Usando uno de los secundarios para el foco -->
+</resources>
