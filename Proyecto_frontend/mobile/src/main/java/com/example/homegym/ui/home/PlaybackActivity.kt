@@ -38,24 +38,28 @@ class PlaybackActivity : AppCompatActivity() {
         binding.tvVideoTitle.text = title
 
         val ejercicioId = intent.getIntExtra("EJERCICIO_ID", -1)
+        val ejercicioIds = intent.getIntArrayExtra("EJERCICIO_IDS")
+
         if (ejercicioId != -1) {
             registrarEnHistorial(ejercicioId)
         }
 
-        setupPlayer(videoUrl)
+        setupPlayer(videoUrl, ejercicioIds)
         setupCursor()
         setupControls()
 
         showControls()
     }
 
-    private fun setupPlayer(url: String) {
+    private fun setupPlayer(url: String, multipleIds: IntArray? = null) {
         val ejercicioId = intent.getIntExtra("EJERCICIO_ID", -1)
         
         player = ExoPlayer.Builder(this).build().also { exoPlayer ->
             binding.playerView.player = exoPlayer
             
-            if (url.isEmpty() && ejercicioId != -1) {
+            if (multipleIds != null && multipleIds.isNotEmpty()) {
+                cargarVariosYReproducir(multipleIds, exoPlayer)
+            } else if (url.isEmpty() && ejercicioId != -1) {
                 // Si no tenemos URL pero sí ID, intentamos obtener el ejercicio para sacar su URL
                 cargarYReproducir(ejercicioId, exoPlayer)
             } else {
@@ -70,7 +74,56 @@ class PlaybackActivity : AppCompatActivity() {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     updatePlayPauseIcon(isPlaying)
                 }
+
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    super.onMediaItemTransition(mediaItem, reason)
+                    mediaItem?.mediaMetadata?.title?.let {
+                        binding.tvVideoTitle.text = it
+                    }
+                }
             })
+        }
+    }
+
+    private fun cargarVariosYReproducir(ids: IntArray, exoPlayer: ExoPlayer) {
+        val repository = EjercicioRepository(RetrofitClient.instance)
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val token = com.example.homegym.util.TokenManager.getToken(this@PlaybackActivity).first()
+                if (token != null) {
+                    val response = repository.getEjercicios(token)
+                    if (response.isSuccessful) {
+                        val allEjercicios = response.body() ?: emptyList()
+                        val mediaItems = mutableListOf<MediaItem>()
+                        
+                        ids.forEach { id ->
+                            allEjercicios.find { it.id == id }?.let { ej ->
+                                val item = MediaItem.Builder()
+                                    .setUri(ej.videoUrl ?: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+                                    .setMediaMetadata(androidx.media3.common.MediaMetadata.Builder().setTitle(ej.nombre).build())
+                                    .build()
+                                mediaItems.add(item)
+                            }
+                        }
+                        
+                        if (mediaItems.isNotEmpty()) {
+                            exoPlayer.setMediaItems(mediaItems)
+                            exoPlayer.prepare()
+                            exoPlayer.playWhenReady = true
+                            binding.tvVideoTitle.text = mediaItems[0].mediaMetadata.title
+                            
+                            // Registrar el primer ejercicio
+                            registrarEnHistorial(ids[0])
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Fallback
+                val mediaItem = MediaItem.fromUri("https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.prepare()
+                exoPlayer.playWhenReady = true
+            }
         }
     }
 

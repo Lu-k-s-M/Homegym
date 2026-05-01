@@ -49,6 +49,29 @@ interface HomegymApiService {
         @Header("Authorization") token: String
     ): Response<List<com.example.homegym.data.model.Rutina>>
 
+    @POST("api/rutinas")
+    suspend fun crearRutina(
+        @Header("Authorization") token: String,
+        @Body request: com.example.homegym.data.model.RutinaCreateRequest
+    ): Response<com.example.homegym.data.model.Rutina>
+
+    @DELETE("api/rutinas/{id}")
+    suspend fun eliminarRutina(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    @POST("api/rutinas/multiples_delete")
+    suspend fun eliminarMultiplesRutinas(
+        @Header("Authorization") token: String,
+        @Body ids: List<Int>
+    ): Response<Unit>
+
+    @DELETE("api/rutinas/limpiar")
+    suspend fun limpiarRutinas(
+        @Header("Authorization") token: String
+    ): Response<Unit>
+
     @GET("api/historial")
     suspend fun getHistorial(
         @Header("Authorization") token: String

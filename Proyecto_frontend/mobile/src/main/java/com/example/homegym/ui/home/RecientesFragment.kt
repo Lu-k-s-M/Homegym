@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -49,7 +50,9 @@ class RecientesFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = HistorialAdapter(
             items = emptyList(),
-            onDeleteClick = { item -> item.id?.let { viewModel.eliminarUno(it) } },
+            onDeleteClick = { item -> 
+                item.id?.let { showDeleteConfirmation(listOf(it), "este registro") } 
+            },
             onSelectionChanged = { updateSelectionButtons() },
             onItemClick = { item ->
                 val intent = Intent(requireContext(), PlaybackActivity::class.java).apply {
@@ -60,23 +63,38 @@ class RecientesFragment : Fragment() {
                 startActivity(intent)
             }
         )
-        binding.rvRecientes.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvRecientes.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvRecientes.adapter = adapter
     }
 
     private fun setupButtons() {
         binding.btnClearAll.setOnClickListener {
-            viewModel.limpiarTodo()
+            showDeleteConfirmation(null, "todo el historial")
         }
 
         binding.btnDeleteSelection.setOnClickListener {
             val ids = adapter.selectedIds.toList()
             if (ids.isNotEmpty()) {
-                viewModel.eliminarMultiples(ids)
+                showDeleteConfirmation(ids, "${ids.size} registros")
+            }
+        }
+    }
+
+    private fun showDeleteConfirmation(ids: List<Int>?, messagePart: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirmar borrado")
+            .setMessage("¿Estás seguro de que quieres borrar $messagePart?")
+            .setPositiveButton("Borrar") { _, _ ->
+                when {
+                    ids == null -> viewModel.limpiarTodo()
+                    ids.size == 1 -> viewModel.eliminarUno(ids[0])
+                    else -> viewModel.eliminarMultiples(ids)
+                }
                 adapter.selectedIds.clear()
                 updateSelectionButtons()
             }
-        }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun updateSelectionButtons() {
@@ -84,9 +102,23 @@ class RecientesFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        val homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        homeViewModel.isGuest.observe(viewLifecycleOwner) { isGuest ->
+            if (isGuest == true) {
+                binding.btnClearAll.visibility = View.GONE
+                binding.btnDeleteSelection.visibility = View.GONE
+                binding.tvEmpty.text = "Historial no disponible para invitados. ¡Regístrate para guardar tu progreso!"
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.rvRecientes.visibility = View.GONE
+            }
+        }
+
         viewModel.historial.observe(viewLifecycleOwner) { items ->
-            adapter.updateData(items)
-            binding.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            val isGuest = homeViewModel.isGuest.value ?: false
+            if (!isGuest) {
+                adapter.updateData(items)
+                binding.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->

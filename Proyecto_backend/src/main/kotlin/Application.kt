@@ -66,8 +66,8 @@ fun Application.module() {
 
         route("/api") {
             authRoutes()
+            ejerciciosRoutes()
             authenticate("auth-jwt") {
-                ejerciciosRoutes()
                 perfilRoutes()
                 rutinasYEntrenamientosRoutes()
                 historialRoutes()

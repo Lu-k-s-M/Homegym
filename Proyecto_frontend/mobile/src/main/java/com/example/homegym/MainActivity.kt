@@ -67,6 +67,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnSwitchMode.setOnClickListener {
             toggleMode()
         }
+
+        binding.btnGuest.setOnClickListener {
+            viewModel.enterAsGuest()
+        }
     }
 
     private fun toggleMode() {
@@ -94,6 +98,12 @@ class MainActivity : AppCompatActivity() {
                 is LoginState.Success -> {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(this, "Login exitoso", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish()
+                }
+                is LoginState.GuestSuccess -> {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(this, "Accediendo como invitado", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 }

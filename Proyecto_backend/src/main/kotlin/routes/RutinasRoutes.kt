@@ -43,6 +43,23 @@ fun Route.rutinasYEntrenamientosRoutes() {
             if (eliminado) call.respond(HttpStatusCode.NoContent)
             else throw ApiException(HttpStatusCode.NotFound, listOf("Rutina no encontrada o no pertenece al usuario"))
         }
+
+        post("/multiples_delete") {
+            val username = call.currentUsername() ?: throw ApiException(HttpStatusCode.Unauthorized, listOf("No autenticado"))
+            val usuario = UsuariosRepository.getByUsername(username) ?: throw ApiException(HttpStatusCode.NotFound, listOf("Usuario no encontrado"))
+            
+            val ids = call.receive<List<Int>>()
+            RutinasRepository.deleteMultiple(ids, usuario.id!!)
+            call.respond(HttpStatusCode.NoContent)
+        }
+
+        delete("/limpiar") {
+            val username = call.currentUsername() ?: throw ApiException(HttpStatusCode.Unauthorized, listOf("No autenticado"))
+            val usuario = UsuariosRepository.getByUsername(username) ?: throw ApiException(HttpStatusCode.NotFound, listOf("Usuario no encontrado"))
+            
+            RutinasRepository.deleteAllByUsuarioId(usuario.id!!)
+            call.respond(HttpStatusCode.NoContent)
+        }
     }
 
     route("/entrenamientos") {

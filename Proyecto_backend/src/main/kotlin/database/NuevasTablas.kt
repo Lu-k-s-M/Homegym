@@ -16,6 +16,8 @@ object RutinasTable : IntIdTable("rutinas") {
     val usuarioId = reference("usuario_id", UsuariosTable, onDelete = ReferenceOption.CASCADE)
     val nombre = varchar("nombre", 100)
     val descripcion = text("descripcion").nullable()
+    val duracionMinutos = integer("duracion_minutos").default(0)
+    val calorias = integer("calorias").default(0)
 }
 
 object RutinaEjerciciosTable : IntIdTable("rutina_ejercicios") {

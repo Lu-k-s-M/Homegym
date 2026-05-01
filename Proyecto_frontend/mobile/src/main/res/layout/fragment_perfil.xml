@@ -137,5 +137,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tvGuestMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Perfil no disponible para invitados. ¡Regístrate para personalizar tu experiencia!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

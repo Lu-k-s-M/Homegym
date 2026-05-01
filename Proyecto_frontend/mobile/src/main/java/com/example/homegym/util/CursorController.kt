@@ -169,36 +169,76 @@ class CursorController(private val activity: Activity) {
         val scrollThreshold = 180f // A bit more threshold for easier activation
         var scrollSpeed = 15
 
-        // If cursor is very close to the edge, increase scroll speed
+        // Vertical scroll
         if (y > screenHeight - 50 || y < 50) {
             scrollSpeed = 25
         }
 
-        return when {
-            y > screenHeight - scrollThreshold -> {
-                scrollViewsAt(x, y, scrollSpeed)
-            }
-            y < scrollThreshold -> {
-                scrollViewsAt(x, y, -scrollSpeed)
-            }
-            else -> 0
+        var scrolled = 0
+        if (y > screenHeight - scrollThreshold) {
+            scrolled = scrollViewsAt(x, y, scrollSpeed, true)
+        } else if (y < scrollThreshold) {
+            scrolled = scrollViewsAt(x, y, -scrollSpeed, true)
         }
+
+        if (scrolled != 0) return scrolled
+
+        // Horizontal scroll
+        var hScrollSpeed = 15
+        if (x > screenWidth - 50 || x < 50) {
+            hScrollSpeed = 25
+        }
+
+        if (x > screenWidth - scrollThreshold) {
+            scrolled = scrollViewsAt(x, y, hScrollSpeed, false)
+        } else if (x < scrollThreshold) {
+            scrolled = scrollViewsAt(x, y, -hScrollSpeed, false)
+        }
+
+        return scrolled
     }
 
-    private fun scrollViewsAt(x: Float, y: Float, amount: Int): Int {
+    private fun scrollViewsAt(x: Float, y: Float, amount: Int, vertical: Boolean): Int {
         val rootView = activity.window.decorView
-        val scrollable = findScrollableElementAt(rootView, x.toInt(), y.toInt())
-            ?: findFirstScrollableVertical(rootView) // Fallback to first vertical scrollable found
+        
+        // Adjust coordinates for edge cases
+        var searchX = x.toInt()
+        var searchY = y.toInt()
+        
+        // If we are at the very edge, move 5 pixels inside to ensure we hit a view
+        if (!vertical) {
+            if (searchX >= screenWidth - 1) searchX = screenWidth - 10
+            if (searchX <= 1) searchX = 10
+        }
+
+        val scrollable = if (vertical) {
+            findScrollableElementAt(rootView, searchX, searchY, true)
+                ?: findFirstScrollableVertical(rootView)
+        } else {
+            findScrollableElementAt(rootView, searchX, searchY, false)
+        }
 
         scrollable?.let { v ->
-            val actualAmount = if (amount > 0) {
-                if (v.canScrollVertically(1)) amount else 0
+            val actualAmount = if (vertical) {
+                if (amount > 0) {
+                    if (v.canScrollVertically(1)) amount else 0
+                } else {
+                    if (v.canScrollVertically(-1)) amount else 0
+                }
             } else {
-                if (v.canScrollVertically(-1)) amount else 0
+                if (amount > 0) {
+                    if (v.canScrollHorizontally(1)) amount else 0
+                } else {
+                    if (v.canScrollHorizontally(-1)) amount else 0
+                }
             }
             
             if (actualAmount != 0) {
-                v.scrollBy(0, actualAmount)
+                if (vertical) {
+                    v.scrollBy(0, actualAmount)
+                } else {
+                    v.scrollBy(actualAmount, 0)
+                }
                 return actualAmount
             }
         }
@@ -231,14 +271,14 @@ class CursorController(private val activity: Activity) {
         return null
     }
 
-    private fun findScrollableElementAt(view: View, x: Int, y: Int): View? {
+    private fun findScrollableElementAt(view: View, x: Int, y: Int, vertical: Boolean): View? {
         if (view is ViewGroup) {
             for (i in view.childCount - 1 downTo 0) { // Check front to back
                 val child = view.getChildAt(i)
                 val rect = Rect()
                 child.getGlobalVisibleRect(rect)
                 if (rect.contains(x, y) && child.visibility == View.VISIBLE) {
-                    val found = findScrollableElementAt(child, x, y)
+                    val found = findScrollableElementAt(child, x, y, vertical)
                     if (found != null) return found
                 }
             }
@@ -246,22 +286,27 @@ class CursorController(private val activity: Activity) {
 
         val rect = Rect()
         view.getGlobalVisibleRect(rect)
-        return if (rect.contains(x, y) && view.visibility == View.VISIBLE && 
-            (view.canScrollVertically(1) || view.canScrollVertically(-1))) {
-            
-            // Preference for vertical scrollable if we are doing vertical scroll
-            if (view is androidx.recyclerview.widget.RecyclerView) {
-                val lm = view.layoutManager
-                if (lm is androidx.recyclerview.widget.LinearLayoutManager && lm.orientation == androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL) {
-                    null // Skip horizontal lists here, we want the parent scrollable
-                } else {
-                    view
+        if (rect.contains(x, y) && view.visibility == View.VISIBLE) {
+            if (vertical) {
+                if (view.canScrollVertically(1) || view.canScrollVertically(-1)) {
+                    // Preference for vertical scrollable if we are doing vertical scroll
+                    if (view is androidx.recyclerview.widget.RecyclerView) {
+                        val lm = view.layoutManager
+                        if (lm is androidx.recyclerview.widget.LinearLayoutManager && lm.orientation == androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL) {
+                            return null // Skip horizontal lists here, we want the parent scrollable
+                        } else {
+                            return view
+                        }
+                    } else {
+                        return view
+                    }
                 }
             } else {
-                view
+                if (view.canScrollHorizontally(1) || view.canScrollHorizontally(-1)) {
+                    return view
+                }
             }
-        } else {
-            null
         }
+        return null
     }
 }

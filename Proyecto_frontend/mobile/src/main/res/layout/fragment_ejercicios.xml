@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,6 +30,7 @@
             android:descendantFocusability="afterDescendants"
             android:focusable="false"
             android:visibility="gone"
+            android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_ejercicio_horizontal" />
 
@@ -48,6 +50,7 @@
             android:orientation="horizontal"
             android:descendantFocusability="afterDescendants"
             android:focusable="false"
+            android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_ejercicio_horizontal" />
 
@@ -67,6 +70,7 @@
             android:orientation="horizontal"
             android:descendantFocusability="afterDescendants"
             android:focusable="false"
+            android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_ejercicio_horizontal" />
 
@@ -86,6 +90,47 @@
             android:orientation="horizontal"
             android:descendantFocusability="afterDescendants"
             android:focusable="false"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_ejercicio_horizontal" />
+
+        <TextView
+            android:id="@+id/tvPiernaGluteoHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Pierna y Glúteo"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPiernaGluteo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:descendantFocusability="afterDescendants"
+            android:focusable="false"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_ejercicio_horizontal" />
+
+        <TextView
+            android:id="@+id/tvCardioHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Cardio y Aeróbicos"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCardio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:descendantFocusability="afterDescendants"
+            android:focusable="false"
+            android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_ejercicio_horizontal" />
 

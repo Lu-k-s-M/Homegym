@@ -13,6 +13,7 @@ import com.example.homegym.data.api.RetrofitClient
 import com.example.homegym.data.model.PerfilUsuario
 import com.example.homegym.data.repository.PerfilRepository
 import com.example.homegym.databinding.FragmentPerfilBinding
+import com.example.homegym.ui.home.HomeViewModel
 
 class PerfilFragment : Fragment() {
 
@@ -43,7 +44,10 @@ class PerfilFragment : Fragment() {
         setupListeners()
         observeViewModel()
         
-        viewModel.fetchPerfil()
+        val homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        if (homeViewModel.isGuest.value != true) {
+            viewModel.fetchPerfil()
+        }
     }
 
     private fun setupListeners() {
@@ -61,6 +65,25 @@ class PerfilFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        val homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        homeViewModel.isGuest.observe(viewLifecycleOwner) { isGuest ->
+            if (isGuest == true) {
+                binding.btnGuardarPerfil.visibility = View.GONE
+                binding.tilPeso.visibility = View.GONE
+                binding.tilAltura.visibility = View.GONE
+                binding.tilEdad.visibility = View.GONE
+                binding.tilObjetivo.visibility = View.GONE
+                binding.tvGuestMessage.visibility = View.VISIBLE
+            } else {
+                binding.btnGuardarPerfil.visibility = View.VISIBLE
+                binding.tilPeso.visibility = View.VISIBLE
+                binding.tilAltura.visibility = View.VISIBLE
+                binding.tilEdad.visibility = View.VISIBLE
+                binding.tilObjetivo.visibility = View.VISIBLE
+                binding.tvGuestMessage.visibility = View.GONE
+            }
+        }
+
         viewModel.perfilState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PerfilState.Loading -> {

@@ -31,6 +31,13 @@ class PerfilViewModel(
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken(context).first()
+                val isGuest = TokenManager.isGuestMode(context).first()
+                
+                if (isGuest) {
+                    _perfilState.value = PerfilState.Success(PerfilUsuario(objetivo = "Modo Invitado"))
+                    return@launch
+                }
+
                 if (token != null) {
                     val response = repository.getPerfil(token)
                     if (response.isSuccessful) {

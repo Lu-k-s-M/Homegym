@@ -47,6 +47,13 @@ class LoginViewModel(
         }
     }
 
+    fun enterAsGuest() {
+        viewModelScope.launch {
+            TokenManager.setGuestMode(context, true)
+            _loginResult.value = LoginState.GuestSuccess
+        }
+    }
+
     fun register(username: String, password: String, email: String) {
         if (username.isBlank() || password.isBlank() || email.isBlank()) {
             _loginResult.value = LoginState.Error("Todos los campos son obligatorios")
@@ -76,4 +83,5 @@ sealed class LoginState {
     object Success : LoginState()
     object RegisterSuccess : LoginState()
     data class Error(val message: String) : LoginState()
+    object GuestSuccess : LoginState()
 }

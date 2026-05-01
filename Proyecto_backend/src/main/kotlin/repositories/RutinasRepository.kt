@@ -6,6 +6,7 @@ import com.homegym.models.EjercicioRutina
 import com.homegym.models.Rutina
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object RutinasRepository {
@@ -19,6 +20,8 @@ object RutinasRepository {
                     usuarioId = row[RutinasTable.usuarioId].value,
                     nombre = row[RutinasTable.nombre],
                     descripcion = row[RutinasTable.descripcion],
+                    duracionMinutos = row[RutinasTable.duracionMinutos],
+                    calorias = row[RutinasTable.calorias],
                     ejercicios = getEjerciciosDeRutina(id)
                 )
             }
@@ -32,6 +35,8 @@ object RutinasRepository {
                     usuarioId = row[RutinasTable.usuarioId].value,
                     nombre = row[RutinasTable.nombre],
                     descripcion = row[RutinasTable.descripcion],
+                    duracionMinutos = row[RutinasTable.duracionMinutos],
+                    calorias = row[RutinasTable.calorias],
                     ejercicios = getEjerciciosDeRutina(id)
                 )
             }.singleOrNull()
@@ -54,6 +59,8 @@ object RutinasRepository {
             it[usuarioId] = rutina.usuarioId
             it[nombre] = rutina.nombre
             it[descripcion] = rutina.descripcion
+            it[duracionMinutos] = rutina.duracionMinutos
+            it[calorias] = rutina.calorias
         }.value
 
         rutina.ejercicios.forEach { ej ->
@@ -71,5 +78,13 @@ object RutinasRepository {
 
     fun delete(id: Int, usuarioId: Int): Boolean = transaction {
         RutinasTable.deleteWhere { (RutinasTable.id eq id) and (RutinasTable.usuarioId eq usuarioId) } > 0
+    }
+
+    fun deleteMultiple(ids: List<Int>, usuarioId: Int): Boolean = transaction {
+        RutinasTable.deleteWhere { (RutinasTable.id inList ids) and (RutinasTable.usuarioId eq usuarioId) } > 0
+    }
+
+    fun deleteAllByUsuarioId(usuarioId: Int): Boolean = transaction {
+        RutinasTable.deleteWhere { RutinasTable.usuarioId eq usuarioId } > 0
     }
 }

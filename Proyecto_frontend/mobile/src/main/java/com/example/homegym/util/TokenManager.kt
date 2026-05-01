@@ -13,10 +13,12 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 object TokenManager {
     private val AUTH_TOKEN = stringPreferencesKey("auth_token")
+    private val IS_GUEST = stringPreferencesKey("is_guest")
 
     suspend fun saveToken(context: Context, token: String) {
         context.dataStore.edit { settings ->
             settings[AUTH_TOKEN] = token
+            settings[IS_GUEST] = "false"
         }
     }
 
@@ -26,9 +28,27 @@ object TokenManager {
         }
     }
 
+    suspend fun setGuestMode(context: Context, isGuest: Boolean) {
+        context.dataStore.edit { settings ->
+            if (isGuest) {
+                settings[IS_GUEST] = "true"
+                settings.remove(AUTH_TOKEN)
+            } else {
+                settings[IS_GUEST] = "false"
+            }
+        }
+    }
+
+    fun isGuestMode(context: Context): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[IS_GUEST] == "true"
+        }
+    }
+
     suspend fun deleteToken(context: Context) {
         context.dataStore.edit { settings ->
             settings.remove(AUTH_TOKEN)
+            settings.remove(IS_GUEST)
         }
     }
 }

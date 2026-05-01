@@ -8,6 +8,8 @@ data class Rutina(
     val usuarioId: Int,
     val nombre: String,
     val descripcion: String? = null,
+    val duracionMinutos: Int = 0,
+    val calorias: Int = 0,
     val ejercicios: List<EjercicioRutina> = emptyList()
 )
 
@@ -16,7 +18,7 @@ data class EjercicioRutina(
     val ejercicioId: Int,
     val series: Int,
     val repeticiones: Int,
-    val descansoSegundos: Int? = null
+    val descansoSegundos: Int? = 0
 )
 
 @Serializable
