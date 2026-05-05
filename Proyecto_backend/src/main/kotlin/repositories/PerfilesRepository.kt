@@ -43,4 +43,8 @@ object PerfilesRepository {
             perfil.copy(id = existing.id)
         }
     }
+
+    fun deleteByUsuarioId(usuarioId: Int): Boolean = transaction {
+        PerfilesTable.deleteWhere { PerfilesTable.usuarioId eq usuarioId } > 0
+    }
 }

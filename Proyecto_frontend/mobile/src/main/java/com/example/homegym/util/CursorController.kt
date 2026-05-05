@@ -130,7 +130,9 @@ class CursorController(private val activity: Activity) {
         val downEvent = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0)
         activity.window.decorView.dispatchTouchEvent(downEvent)
         
-        val upEvent = MotionEvent.obtain(downTime, eventTime + 100, MotionEvent.ACTION_UP, x, y, 0)
+        SystemClock.sleep(50) // Pequeño retraso para asegurar que ACTION_DOWN se procese
+        
+        val upEvent = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0)
         activity.window.decorView.dispatchTouchEvent(upEvent)
 
         downEvent.recycle()

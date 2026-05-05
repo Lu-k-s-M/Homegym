@@ -72,6 +72,41 @@ paths:
       responses:
         '201':
           description: Ejercicio creado
+  /api/ejercicios/{id}:
+    put:
+      summary: Actualizar un ejercicio
+      tags: [Ejercicios]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ejercicio'
+      responses:
+        '200':
+          description: Ejercicio actualizado
+    delete:
+      summary: Eliminar un ejercicio
+      tags: [Ejercicios]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Ejercicio eliminado
   /api/perfil:
     get:
       summary: Obtener perfil del usuario
@@ -89,9 +124,37 @@ paths:
       responses:
         '200':
           description: Perfil actualizado
+    delete:
+      summary: Eliminar perfil del usuario
+      tags: [Perfil]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Perfil eliminado
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Ejercicio:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        intensidad:
+          type: string
+        parteCuerpo:
+          type: string
+        calorias:
+          type: integer
+        videoUrl:
+          type: string
+        imagenUrl:
+          type: string

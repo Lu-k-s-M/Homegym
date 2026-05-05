@@ -33,5 +33,14 @@ fun Route.perfilRoutes() {
             val guardado = PerfilesRepository.upsert(perfilToSave)
             call.respond(HttpStatusCode.OK, guardado)
         }
+
+        delete {
+            val username = call.currentUsername() ?: throw ApiException(HttpStatusCode.Unauthorized, listOf("No autenticado"))
+            val usuario = UsuariosRepository.getByUsername(username) ?: throw ApiException(HttpStatusCode.NotFound, listOf("Usuario no encontrado"))
+            
+            val eliminado = PerfilesRepository.deleteByUsuarioId(usuario.id!!)
+            if (eliminado) call.respond(HttpStatusCode.NoContent)
+            else throw ApiException(HttpStatusCode.NotFound, listOf("Perfil no encontrado"))
+        }
     }
 }

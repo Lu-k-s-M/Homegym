@@ -57,8 +57,8 @@ class RutinasViewModel(
     fun fetchEjercicios() {
         viewModelScope.launch {
             try {
-                // Realizamos la petición sin token o con token vacío, ya que el endpoint es público
-                val response = ejercicioRepository.getEjercicios("")
+                val token = TokenManager.getToken(getApplication()).first() ?: ""
+                val response = ejercicioRepository.getEjercicios(token)
                 if (response.isSuccessful) {
                     _ejercicios.value = response.body() ?: emptyList()
                     android.util.Log.d("RutinasViewModel", "Ejercicios cargados: ${response.body()?.size}")

@@ -26,15 +26,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="Peso (kg)"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
             app:layout_constraintTop_toBottomOf="@id/tvProfileTitle">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPeso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_focus_bg"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:inputType="numberDecimal"
@@ -49,15 +46,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Altura (cm)"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
             app:layout_constraintTop_toBottomOf="@id/tilPeso">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAltura"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_focus_bg"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:inputType="numberDecimal"
@@ -73,15 +67,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Edad"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
             app:layout_constraintTop_toBottomOf="@id/tilAltura">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEdad"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_focus_bg"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:inputType="number"
@@ -97,15 +88,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Objetivo"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
             app:layout_constraintTop_toBottomOf="@id/tilEdad">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etObjetivo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_focus_bg"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:inputType="text"

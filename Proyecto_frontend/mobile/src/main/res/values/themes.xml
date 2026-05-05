@@ -16,6 +16,9 @@
 
         <!-- Evitar focos automáticos indeseados -->
         <item name="android:focusableInTouchMode">false</item>
+
+        <!-- Estilo para TextInputLayout para asegurar que el hint use el color primario al enfocar -->
+        <item name="hintTextColor">@color/hg_primary</item>
     </style>
 
     <style name="Theme.Homegym" parent="Base.Theme.Homegym" />

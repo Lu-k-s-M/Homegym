@@ -77,11 +77,13 @@ class MainActivity : AppCompatActivity() {
         isRegisterMode = !isRegisterMode
         if (isRegisterMode) {
             binding.etEmail.visibility = View.VISIBLE
+            binding.tvPasswordRequirements.visibility = View.VISIBLE
             binding.btnLogin.text = "Registrarse"
             binding.btnSwitchMode.text = "¿Ya tienes cuenta? Inicia Sesión"
             binding.tietEmail.requestFocus()
         } else {
             binding.etEmail.visibility = View.GONE
+            binding.tvPasswordRequirements.visibility = View.GONE
             binding.btnLogin.text = "Iniciar Sesión"
             binding.btnSwitchMode.text = "¿No tienes cuenta? Regístrate"
             binding.tietUsername.requestFocus()

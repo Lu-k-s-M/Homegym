@@ -16,6 +16,7 @@ import com.example.homegym.data.repository.RutinaRepository
 import com.example.homegym.databinding.FragmentRutinasBinding
 
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import com.example.homegym.data.repository.EjercicioRepository
 import com.example.homegym.databinding.DialogCreateRutinaBinding
 import com.example.homegym.ui.home.PlaybackActivity
@@ -134,6 +135,10 @@ class RutinasFragment : Fragment() {
         dialogBinding.rvEjerciciosSeleccion.layoutManager = LinearLayoutManager(requireContext())
         dialogBinding.rvEjerciciosSeleccion.adapter = adapter
 
+        dialogBinding.etSearchEjercicio.addTextChangedListener { text ->
+            adapter.filter(text.toString())
+        }
+
         viewModel.ejercicios.observe(viewLifecycleOwner) { ejercicios ->
             adapter.updateData(ejercicios)
         }
@@ -163,6 +168,8 @@ class RutinasFragment : Fragment() {
 
     private fun observeViewModel() {
         val homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        
+        // Observamos isGuest para configurar la UI inicial
         homeViewModel.isGuest.observe(viewLifecycleOwner) { isGuest ->
             if (isGuest == true) {
                 binding.fabAddRutina.visibility = View.GONE
@@ -171,10 +178,19 @@ class RutinasFragment : Fragment() {
                 binding.tvErrorRutinas.text = "Las rutinas no están disponibles para invitados. ¡Regístrate para crear las tuyas!"
                 binding.tvErrorRutinas.visibility = View.VISIBLE
                 binding.rvRutinas.visibility = View.GONE
+                binding.pbRutinas.visibility = View.GONE
             }
         }
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            val isGuest = homeViewModel.isGuest.value ?: false
+            
+            // Si es invitado, ignoramos los estados del ViewModel que podrían mostrar el loading o sobreescribir el mensaje
+            if (isGuest) {
+                binding.pbRutinas.visibility = View.GONE
+                return@observe
+            }
+
             when (state) {
                 is RutinasState.Loading -> {
                     binding.pbRutinas.visibility = View.VISIBLE
@@ -182,22 +198,16 @@ class RutinasFragment : Fragment() {
                     binding.tvErrorRutinas.visibility = View.GONE
                 }
                 is RutinasState.Success -> {
-                    val isGuest = homeViewModel.isGuest.value ?: false
-                    if (!isGuest) {
-                        binding.pbRutinas.visibility = View.GONE
-                        binding.rvRutinas.visibility = View.VISIBLE
-                        binding.tvErrorRutinas.visibility = View.GONE
-                        adapter.updateData(state.rutinas)
-                    }
+                    binding.pbRutinas.visibility = View.GONE
+                    binding.rvRutinas.visibility = View.VISIBLE
+                    binding.tvErrorRutinas.visibility = View.GONE
+                    adapter.updateData(state.rutinas)
                 }
                 is RutinasState.Error -> {
-                    val isGuest = homeViewModel.isGuest.value ?: false
-                    if (!isGuest) {
-                        binding.pbRutinas.visibility = View.GONE
-                        binding.rvRutinas.visibility = View.GONE
-                        binding.tvErrorRutinas.visibility = View.VISIBLE
-                        binding.tvErrorRutinas.text = state.message
-                    }
+                    binding.pbRutinas.visibility = View.GONE
+                    binding.rvRutinas.visibility = View.GONE
+                    binding.tvErrorRutinas.visibility = View.VISIBLE
+                    binding.tvErrorRutinas.text = state.message
                 }
             }
         }

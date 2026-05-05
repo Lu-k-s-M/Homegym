@@ -10,14 +10,29 @@ import androidx.core.content.ContextCompat
 import com.example.homegym.R
 
 class EjercicioSeleccionAdapter(
-    private var ejercicios: List<Ejercicio>,
+    private var todosLosEjercicios: List<Ejercicio>,
     private val onSelectionChanged: (List<Int>) -> Unit
 ) : RecyclerView.Adapter<EjercicioSeleccionAdapter.ViewHolder>() {
 
+    private var ejerciciosFiltrados = todosLosEjercicios
     private val seleccionados = mutableSetOf<Int>()
 
     fun updateData(newEjercicios: List<Ejercicio>) {
-        ejercicios = newEjercicios
+        todosLosEjercicios = newEjercicios
+        ejerciciosFiltrados = newEjercicios
+        notifyDataSetChanged()
+    }
+
+    fun filter(query: String) {
+        ejerciciosFiltrados = if (query.isEmpty()) {
+            todosLosEjercicios
+        } else {
+            todosLosEjercicios.filter { 
+                it.nombre.contains(query, ignoreCase = true) || 
+                it.descripcion.contains(query, ignoreCase = true) ||
+                it.parteCuerpo.contains(query, ignoreCase = true)
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -29,7 +44,7 @@ class EjercicioSeleccionAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val ejercicio = ejercicios[position]
+        val ejercicio = ejerciciosFiltrados[position]
         holder.binding.apply {
             tvNombre.text = ejercicio.nombre
             tvDescripcion.text = ejercicio.descripcion
@@ -67,5 +82,5 @@ class EjercicioSeleccionAdapter(
         }
     }
 
-    override fun getItemCount() = ejercicios.size
+    override fun getItemCount() = ejerciciosFiltrados.size
 }

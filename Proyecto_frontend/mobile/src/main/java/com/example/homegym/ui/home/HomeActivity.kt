@@ -69,8 +69,11 @@ class HomeActivity : AppCompatActivity() {
             if (binding.etSearch.visibility == View.GONE) {
                 binding.etSearch.visibility = View.VISIBLE
                 binding.etSearch.requestFocus()
-                val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                imm.showSoftInput(binding.etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+                // Usamos post para asegurar que la vista sea visible antes de mostrar el teclado
+                binding.etSearch.post {
+                    val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                    imm.showSoftInput(binding.etSearch, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+                }
             } else {
                 val query = binding.etSearch.text.toString()
                 if (query.isNotEmpty()) {
